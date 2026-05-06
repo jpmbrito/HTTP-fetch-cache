@@ -61,7 +61,18 @@ All implementation details will be stored in the code. The executable will be ma
 
 ### Build and execution
 ```
-go test -c ./src/
+go test -v -count=1 ./src/
 ```
+
+#### With code coverage profile:
+```
+go test -coverprofile=code_coverage.out -v -count=1 ./src/
+```
+##### Export coverage to html:
+```
+go tool cover -html=code_coverage.out
+```
+
+Current cache.go coverage is 94.4%.
 
 ## Licence

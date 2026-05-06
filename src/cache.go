@@ -141,7 +141,7 @@ func (c *Cache) Fetch(ctx context.Context, url string, ttlOverride ...time.Durat
 	// Check if data exists in loading cache
 	if loadingCacheEntry, loadingCacheExists := c.loadingCacheEntries[URL(url)]; loadingCacheExists {
 		c.stats.hits += 1
-		fmt.Printf("CACHE HIT(LOAD) %d\t: url=%s, elapsed=%v, ttl=%v\n", c.stats.hits, url, time.Since(entry.timestamp), entry.ttl)
+		fmt.Printf("CACHE HIT(LOAD) %d\t: url=%s\n", c.stats.hits, url)
 
 		loadingCacheEntry.waiters.Add(1)
 		c.loadingCacheMutex.Unlock()
