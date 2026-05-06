@@ -57,9 +57,11 @@ All implementation details will be stored in the code. The executable will be ma
 ## Getting started
 
 ### Prerequisites
+- go1.22.2
 
-### Build
-
-### Execution
+### Build and execution
+```
+go test -c ./src/
+```
 
 ## Licence
