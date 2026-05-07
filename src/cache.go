@@ -56,7 +56,7 @@ type Cache struct {
 	// The loadingCacheEntries map holds loading cache entries to be served to concurrent requests.
 	// It's necessary to ensure that there are no deduplicated http requests
 	loadingCacheEntries map[string]*loadingCacheEntry
-	loadingCacheMutex   sync.RWMutex
+	loadingCacheMutex   sync.Mutex
 
 	stats metrics
 
