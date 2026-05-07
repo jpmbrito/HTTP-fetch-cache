@@ -70,6 +70,7 @@ All implementation details will be stored in the code. The executable will be ma
 
 ### Build and execution
 ```
+go mod tidy
 go test -v -count=1 ./src/
 ```
 
