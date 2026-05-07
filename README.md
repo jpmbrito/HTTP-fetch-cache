@@ -4,43 +4,52 @@ This repository aims in solving Coding challenge 1 for enclaive interview proces
 https://docs.google.com/document/d/1xCU4lTI28lcYm7_n_H5Z7mR4l322-H-Z3Qpw3zlN0bQ/edit?tab=t.0
 
 ## Table of contents
+1. [Planning](#planning)
+2. [Software Development Life Cycle](#software-development-life-cycle)
+    * [Requirements](#requirements)
+    * [Design](#design)
+    * [Implementation](#implementation)
+3. [Getting started](#getting-started)
+    * [Prerequisites](#prerequisites)
+    * [Build and execution](#build-and-execution)
+4. [Review findings](#review-findings)
+5. [Current limitations](#current-limitations)
 
 ## Planning
 
-An initial planning session has been made to estimate the amount of time necessary to perform this task. Following table contains the estimation:
+An initial planning session has been made to estimate the amount of time necessary to perform this task. Following table contains the estimation and real time measurement:
 
-| Task Description | Estimated Time |
-| :--- | :--- |
-| Reading spec & planning | 10 min |
-| Designing cache structure (storage, TTLs, deduplication, locks) | 10 min |
-| Implementing basic cache storage & Fetch skeleton | 15 min |
+| Task Description | Estimated Time | 
+| :--- | :--- | 
+| Reading spec & planning | 10 min | 
+| Designing cache structure (storage, TTLs, deduplication, locks) | 10 min | 
+| Implementing basic cache storage & Fetch skeleton | 15 min |  
 | Adding TTL expiration logic | 10 min |
-| Implementing deduplication for concurrent fetches | 15 min |
-| Adding HTTP fetch logic & error handling | 15 min |
+| Implementing deduplication for concurrent fetches | 15 min | 
+| Adding HTTP fetch logic & error handling | 15 min | 
 | Adding logging of cache hits/misses | 10 min |
 | Implementing Stats() | 5 min |
-| Writing unit tests (httptest.Server, concurrency, TTL) | 20 min |
-| Code review, documentation, and polish | 10 min |
-| **Total Estimated Time** | 2h |
+| Writing unit tests (httptest.Server, concurrency, TTL) | 20 min | 
+| Code review, documentation, and polish | 15 min |
+| **Total  Time** | 2h |
 
-## SDL (Software Development Life Cycle)
+## Software Development Life Cycle
 
 One of the requirements for the project is to forbid the usage of LLM. Therefore I will use the formal SDL process to model the problem.
 
 ### Requirements
-The problem in cause is a web server proxy, capable of:
-- On the fly fetching of HTTP content per TTL (Time to Leave)
-- Caching of duplicated requests by using internal memory
-- Prevent deduplication during caching. This means that only a HTTP request shall be executed at a time, with a life of TTL, even if many requests are executed
-- cache statics metrics shall be made available
-- The deliverable has just a form of a golang test file
+It's necessary to develop a web service proxy capable of:
+- Fetch and cache on the fly HTTP requests within Time To Live period
+- Prevent deduplication during caching. This means that only one HTTP request for a given resource shall be executed at a time. Means other concurrent requests shall wait for this unique request.
+- Provide cache statics (cache miss, cache hits and total cache entries)
+- The deliverable has just a form of a golang unit test file
 
 ### Design
 The problem description already defines three interfaces, within cache.go. This are:
 - NewCache
     - Cache contructor. Idealy it should have a cache clean-up housekeeper.
 - Fetch
-    - This is where the cache fetching algorithm will be stored. It shall have the following high-level steps:
+    - This is where the cache fetching algorithm will exist. It shall have the following high-level steps:
         1. It shall check if the requested URL exists in the internal cache structure
         1.1. If it exists, it shall check if it's within the configured TTL. If not, it shall be cleaned
         2. It shall check if the requested URL is being loaded by another Fetch request. If yes, it shall wait for it and use the loading cached version
@@ -73,6 +82,15 @@ go test -coverprofile=code_coverage.out -v -count=1 ./src/
 go tool cover -html=code_coverage.out
 ```
 
-Current cache.go coverage is 94.4%.
+Current cache.go coverage is 96.1%. It isn't hard to reach 100%, but I simply ran out of time.
 
-## Licence
+
+## Review findings
+During review activities following issues have been identified and resolved:
+- Cache was able to indefinitely grow and could lead to memory overflow. Initialy it was not clear where to perform the housekeeping (because performance would be degraded).
+  - After the review, I realized that the best place to do this is before adding an entry to the cache. At this stage, we perform the housekeeping and evaluate the used cache memory. If used cache memory is above a certain threshold, caching doesn't happen, however, deduplication still works for the concurrent requests that are not cached due to memory reasons. From user perspective, the cache will get slightly slower because it either needs to fetch or wait for the loading cache from another fetch request.
+    - This was fixed and coverage was added.
+- Many coding style issues have been identified and corrected. It's very tempting to use lock defer within functions called by fetch. Indeed, by design, this is the best practice ; however, I do think it's much easier to inspect concurrency with explicit locks and unlocks as it is.
+
+## Current limitations
+The biggest limitation of the current solution is the housekeeper. It basically locks the cache entry completely, and will basically underperform. Unfortunately, for the sake of time, I have no time to continue investigating this, but by far this is a scalability limiting factor.
