@@ -1,7 +1,6 @@
-# Enclaive Coding Challenge 1
+# HTTP Fetch cache
 
-This repository aims in solving Coding challenge 1 for enclaive interview process developed by Joao Brito:
-https://docs.google.com/document/d/1xCU4lTI28lcYm7_n_H5Z7mR4l322-H-Z3Qpw3zlN0bQ/edit?tab=t.0
+This repository contains a implementation of HTTP Fetch with TTL and Deduplication in golang (`src/cache.go`)
 
 ## Table of contents
 1. [Planning](#planning)
@@ -14,6 +13,35 @@ https://docs.google.com/document/d/1xCU4lTI28lcYm7_n_H5Z7mR4l322-H-Z3Qpw3zlN0bQ/
     * [Build and execution](#build-and-execution)
 4. [Review findings](#review-findings)
 5. [Current limitations](#current-limitations)
+
+## Requirements
+It's necessary to develop a web service proxy capable of:
+- Fetch and cache on the fly HTTP requests within Time To Live period
+- Prevent deduplication during caching. This means that only one HTTP request for a given resource shall be executed at a time. Means other concurrent requests shall wait for this unique request.
+- Provide cache statics (cache miss, cache hits and total cache entries)
+- The deliverable has just a form of a golang unit test file
+
+## Design
+This implementation will be mainly located in `cache.go` exposing three main interfaces:
+- NewCache
+    - Cache initializer
+- Fetch
+    - This is where the cache fetching algorithm should be implemented. It is initiated by a user HTTP request for a specific resource, as follows:
+        1. It shall check if the requested URL exists (cached) in the internal cache structure
+        1.1. If it exists, it shall check if it's within the configured Time To Leave period. If not, it shall be cleaned
+        2. It checks if the requested URL is already being loaded by another fetch request. If it is, the system waits for the request to finish and uses the cached version
+        3. If the URL is neither cached nor being loaded, an HTTP request shall be initiated accordingly with a mechanism that prevents deduplication, by informing other Fetch requests for the same URL from step 2.
+- Stats
+    - The following metrics shall be made available:
+        1. hits: For cache hits. The counter gets incremented when a cache entry exists within the registered TT
+        2. misses: For cache misses. The counter gets incremented each time a given URL doesn't exist in the cache
+        3. entries: The number of cache entries existing at the instant
+
+High level design decisions:
+- 
+
+## Implementation
+All implementation details will be stored in the code. The executable will be mainly a unit test file called cache_test.go
 
 ## Planning
 
@@ -59,9 +87,6 @@ The problem description already defines three interfaces, within cache.go. This 
         1. hits: For cache hits. The counter gets incremented when a cache entry exists within the registered TT
         2. misses: For cache misses. The counter gets incremented each time a given URL doesn't exist in the cache
         3. entries: The number of cache entries existing at the instant
-
-### Implementation
-All implementation details will be stored in the code. The executable will be mainly a unit test file called cache_test.go
 
 ## Getting started
 
