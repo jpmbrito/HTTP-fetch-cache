@@ -37,9 +37,6 @@ This implementation will be mainly located in `cache.go` exposing three main int
         2. misses: For cache misses. The counter gets incremented each time a given URL doesn't exist in the cache
         3. entries: The number of cache entries existing at the instant
 
-High level design decisions:
-- 
-
 ## Implementation
 All implementation details will be stored in the code. The executable will be mainly a unit test file called cache_test.go
 
