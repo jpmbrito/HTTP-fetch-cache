@@ -96,6 +96,7 @@ func (c *Cache) Fetch(ctx context.Context, url string, ttlOverride ...time.Durat
 
 		//3.2. Release 2.
 		c.entriesMutex.Unlock()
+		
 		return entry.data, nil
 	}
 
