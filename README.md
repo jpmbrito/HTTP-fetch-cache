@@ -61,33 +61,6 @@ An initial planning session has been made to estimate the amount of time necessa
 | Code review, documentation, and polish | 15 min |
 | **Total  Time** | 2h |
 
-## Software Development Life Cycle
-
-One of the requirements for the project is to forbid the usage of LLM. Therefore I will use the formal SDL process to model the problem.
-
-### Requirements
-It's necessary to develop a web service proxy capable of:
-- Fetch and cache on the fly HTTP requests within Time To Live period
-- Prevent deduplication during caching. This means that only one HTTP request for a given resource shall be executed at a time. Means other concurrent requests shall wait for this unique request.
-- Provide cache statics (cache miss, cache hits and total cache entries)
-- The deliverable has just a form of a golang unit test file
-
-### Design
-The problem description already defines three interfaces, within cache.go. This are:
-- NewCache
-    - Cache contructor. Idealy it should have a cache clean-up housekeeper.
-- Fetch
-    - This is where the cache fetching algorithm will exist. It shall have the following high-level steps:
-        1. It shall check if the requested URL exists in the internal cache structure
-        1.1. If it exists, it shall check if it's within the configured TTL. If not, it shall be cleaned
-        2. It shall check if the requested URL is being loaded by another Fetch request. If yes, it shall wait for it and use the loading cached version
-        3. If the URL is neither cached nor being loaded, an HTTP request shall be initiated accordingly with a mechanism that prevents deduplication, by informing other Fetch requests for the same URL from step 2.
-- Stats
-    - Three stats are necessary:
-        1. hits: For cache hits. The counter gets incremented when a cache entry exists within the registered TT
-        2. misses: For cache misses. The counter gets incremented each time a given URL doesn't exist in the cache
-        3. entries: The number of cache entries existing at the instant
-
 ## Getting started
 
 ### Prerequisites
