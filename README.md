@@ -71,9 +71,9 @@ go mod tidy
 go test -v -count=1 ./src/
 ```
 
-#### With code coverage profile:
+#### With code coverage and race detection:
 ```
-go test -coverprofile=code_coverage.out -v -count=1 ./src/
+go test -coverprofile=code_coverage.out -v -race -count=1 ./src/
 ```
 ##### Export coverage to html:
 ```
