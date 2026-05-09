@@ -2,6 +2,8 @@
 
 This repository contains a implementation of HTTP Fetch with TTL and Deduplication in golang (`src/cache.go`)
 
+Important to note, all architecture, design and code have beend developed by an Human. No LLM was used in this context.
+
 ## Table of contents
 1. [Planning](#planning)
 2. [Software Development Life Cycle](#software-development-life-cycle)
@@ -23,22 +25,22 @@ It's necessary to develop a web service proxy capable of:
 
 ## Design
 This implementation will be mainly located in `cache.go` exposing three main interfaces:
-- NewCache
+- `NewCache`
     - Cache initializer
-- Fetch
+- `Fetch`
     - This is where the cache fetching algorithm should be implemented. It is initiated by a user HTTP request for a specific resource, as follows:
         1. It shall check if the requested URL exists (cached) in the internal cache structure
         1.1. If it exists, it shall check if it's within the configured Time To Leave period. If not, it shall be cleaned
         2. It checks if the requested URL is already being loaded by another fetch request. If it is, the system waits for the request to finish and uses the cached version
         3. If the URL is neither cached nor being loaded, an HTTP request shall be initiated accordingly with a mechanism that prevents deduplication, by informing other Fetch requests for the same URL from step 2.
-- Stats
+- `Stats`
     - The following metrics shall be made available:
         1. hits: For cache hits. The counter gets incremented when a cache entry exists within the registered TT
         2. misses: For cache misses. The counter gets incremented each time a given URL doesn't exist in the cache
         3. entries: The number of cache entries existing at the instant
 
 ## Implementation
-All implementation details will be stored in the code. The executable will be mainly a unit test file called cache_test.go
+All implementation details will be stored in the code. The executable will be mainly a unit test file called `cache_test.go`
 
 ## Planning
 
