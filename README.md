@@ -30,7 +30,7 @@ This implementation will be mainly located in `cache.go` exposing three main int
 - `Fetch`
     - This is where the cache fetching algorithm should be implemented. It is initiated by a user HTTP request for a specific resource, as follows:
         1. It shall check if the requested URL exists (cached) in the internal cache structure
-        1.1. If it exists, it shall check if it's within the configured Time To Leave period. If not, it shall be cleaned
+        1.1. If it exists, it shall check if it's within the configured Time To Live period. If not, it shall be cleaned
         2. It checks if the requested URL is already being loaded by another fetch request. If it is, the system waits for the request to finish and uses the cached version
         3. If the URL is neither cached nor being loaded, an HTTP request shall be initiated accordingly with a mechanism that prevents deduplication, by informing other Fetch requests for the same URL from step 2.
 - `Stats`
