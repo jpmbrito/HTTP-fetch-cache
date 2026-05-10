@@ -91,6 +91,8 @@ func (c *Cache) Fetch(ctx context.Context, url string, ttlOverride ...time.Durat
 	if exists && time.Since(entry.timestamp) < entry.ttl {
 
 		//3.1. It exists, Cache HIT
+		// Lock exists mainly to keep consistency when logging. Indeed I could have hits an atomic.Int64 
+		// but since it always go together with log we can keep it as normal int since it's protected with a mutex
 		c.stats.hits += 1
 		log.Printf("CACHE HIT %d\t: url=%s, elapsed=%v, ttl=%v\n", c.stats.hits, url, time.Since(entry.timestamp), entry.ttl)
 
