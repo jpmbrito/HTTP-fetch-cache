@@ -36,7 +36,7 @@ type cacheEntry struct {
 }
 
 // metrics holds statistics about cache performance.
-// Intentionally the structure is not thread safe to force updating and accessing the values from within critical sessions.
+// Intentionally the structure is not thread safe to force updating and accessing the values from within critical sections.
 // This ensures that all logs represents the correct state of the cache on any given instant
 type metrics struct {
 	hits   int
